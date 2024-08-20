@@ -1,0 +1,60 @@
+extends CharacterBody3D
+class_name Player
+##Todas as variáveis e métodos que a classe player recebe, como movimentação linear e angular
+
+const velMax = 280 ##Define o valor da velocidade máxima
+const acel = 25 ##Define a aceleração do corpo
+const friccao = 500 ##Define a fricção (Atrito) do corpo
+
+@export var MeshAxis : Node3D ##Variável que recebe quais são as malhas a serem giradas
+@onready var olharDir : Vector3 = global_position ##Vetor 3 que define a posição inicial do jogador e será usado para atualizar a posição ao longo das variações seguintes, sendo o ponto "antigo" e a velocidade o "novo"
+
+func animacao_giro() -> void: ##Define uma interpotalação linear de modo que o personagem oscile de da posicisão inicial dele para a nova definida pela velocidade
+	if velocity: #Se velocisade for diferente de 0
+		olharDir = lerp(olharDir, global_position + (velocity * Vector3(1,0,1)), 0.2) #Cria uma interpolação linear,
+		#começando da poseição inicial (olharDir). E vai oscilar até onde a velocidade aponta. O úiltimo termo é
+		#a variação
+		MeshAxis.look_at(olharDir) #define para onde o objeto olha
+
+var versor = Vector3.ZERO ##Cria um vetor x,y,z. ZERO faz tudo começar com valor igual a 0 em todas as posições, o nome versor foi escolhido porque este é um vetor unitário o qual servirá de referência para multiplicar a norma da velocidade
+
+func _physics_process(delta: float) -> void: ##Chamado da física da Godot, ela quem chama a função movimento_jogador
+	movimento_Jogador(delta)
+	animacao_giro()
+
+func verificar_norma(): ##Função que define para onde o versor vai apontar, retorna um vetor normalizado
+	versor.x = int(Input.is_action_pressed("AndarFrente")) - int(Input.is_action_pressed("AndarTras"))
+	#O Input retorna 1 ou 0 pois o resultado é booleano, então foi convertido para um inteiro, assim
+	#é possivel facilmente determinar a coordenada onde o versor deverá apontar
+	versor.z = int(Input.is_action_pressed("AndarDireita")) - int(Input.is_action_pressed("AndarEsquerda"))
+	return versor.normalized() #O normalized serve para tornar dois pontos (o versor inicialmente era todo 0) em um
+	#vetor
+	
+#Se quiser que o objeto deslize, usar essa função, do contrário, usar a outra
+#func movimento_Jogador(delta):
+	#versor = verificar_norma()
+	#
+	#if versor == Vector3.ZERO: #Verifica se os botões de movimentar o personagem não estão sendo pressionados
+	#	if velocity.length() > (friccao * delta): #Verifica se a velocidade ainda tem que ser parada com base no
+	#		#atrito
+	#		velocity -= velocity.normalized() * (friccao * delta) #Reduz a velocidade no eixo que existe velocidade
+	#		#com base no fator do atrito
+	#	else:
+	#		velocity = Vector3.ZERO #Redefine a velocidade para 0 e assim o objeto para quando está abaixo do
+	#		#atrito
+	#else:
+	#	velocity += (versor * acel * delta) #aumenta a velocidade usando a orientação do versor e a norma da
+	#	#aceleração
+	#	velocity = velocity.limit_length(velMax) #Define um valor máximo para a velocidade
+	#
+	#move_and_slide() #Faz o objeto deslizar sobre outro, feito para topdown e plataformers
+	
+func movimento_Jogador(delta): ##Função que realiza o movimento do jogador, nesse caso não há aceleração para ser mais fácil o controle do personagem
+	versor = verificar_norma()
+	
+	if versor == Vector3.ZERO:
+		velocity = Vector3.ZERO
+	else:
+		velocity = (versor * velMax * delta)
+	
+	move_and_slide()
