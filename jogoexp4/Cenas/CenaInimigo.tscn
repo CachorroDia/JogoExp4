@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://c65eombfmi27n"]
+
+[ext_resource type="Script" path="res://Scripts/Script Inimigo/Script_Inimigo.gd" id="1_nck2a"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kkcun"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6h7i4"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jgjhs"]
+material = SubResource("StandardMaterial3D_6h7i4")
+
+[node name="Inimigo" type="CharacterBody3D"]
+script = ExtResource("1_nck2a")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_kkcun")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_jgjhs")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+avoidance_enabled = true
+
+[connection signal="navigation_finished" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_navigation_finished"]
+[connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]

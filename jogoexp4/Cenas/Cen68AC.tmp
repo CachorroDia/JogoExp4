@@ -35,7 +35,7 @@ navigation_mesh = SubResource("NavigationMesh_jc6w5")
 [node name="Plataforma" parent="NavigationRegion3D" instance=ExtResource("1_f21dp")]
 
 [node name="Inimigo" parent="." instance=ExtResource("3_okuym")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.7626, 0.686278, -0.167017)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.686278, -23.118)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-0.982561, -0.0963937, -0.159002, -0.181338, 0.685827, 0.70481, 0.0411086, 0.721352, -0.691347, 0.0564971, 11.1479, -25.481)
