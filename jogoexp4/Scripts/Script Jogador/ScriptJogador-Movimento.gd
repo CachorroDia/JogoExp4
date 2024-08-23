@@ -54,8 +54,7 @@ func movimento_Jogador(delta): ##Função que realiza o movimento do jogador, ne
 	move_and_slide()
 	
 func RayCasting(): ## Controla a rotação do personagem baseado na posição do mouse
-	
-	var camera = get_tree().root.get_camera_3d()
+	var camera = $Camera3D
 	var estadoEspaco = get_world_3d().direct_space_state
 	var posicaoMouse = get_viewport().get_mouse_position()
 	
