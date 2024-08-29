@@ -1,0 +1,66 @@
+[gd_scene load_steps=10 format=3 uid="uid://bhj04ajpawc4v"]
+
+[ext_resource type="Script" path="res://Scripts/Balas/BalasClasse.gd" id="1_bigr6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q8314"]
+albedo_color = Color(0.997933, 0.997933, 1.6942e-05, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_nykfy"]
+material = SubResource("StandardMaterial3D_q8314")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ate1o"]
+direction = Vector3(1, 1, 1)
+spread = 180.0
+initial_velocity_min = 8.0
+initial_velocity_max = 16.0
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_guw6q"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_eivb1"]
+gradient = SubResource("Gradient_guw6q")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+metadata/_snap_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ev4el"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("GradientTexture2D_eivb1")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_mtfyf"]
+material = SubResource("StandardMaterial3D_ev4el")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uslht"]
+
+[node name="BalaEntity" type="Node3D" node_paths=PackedStringArray("particle")]
+script = ExtResource("1_bigr6")
+particle = NodePath("GPUParticles3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_nykfy")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 32
+lifetime = 0.2
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_ate1o")
+draw_pass_1 = SubResource("QuadMesh_mtfyf")
+
+[node name="Area3D" type="Area3D" parent="." groups=["bala"]]
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("CapsuleShape3D_uslht")
+
+[connection signal="area_entered" from="Area3D" to="." method="_on_area_3d_area_entered"]

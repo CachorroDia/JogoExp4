@@ -1,22 +1,47 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1but5qx4fi7e"]
+[gd_scene load_steps=10 format=3 uid="uid://b1but5qx4fi7e"]
 
 [ext_resource type="Script" path="res://Scripts/Script Jogador/ScriptJogador-Movimento.gd" id="1_v4dr1"]
+[ext_resource type="PackedScene" uid="uid://bhj04ajpawc4v" path="res://Cenas/Balas/BalaPadrao.tscn" id="2_gju43"]
+[ext_resource type="PackedScene" uid="uid://dwem01y40spx6" path="res://Cenas/VidaJogadorCena.tscn" id="3_ydxm1"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_o6hk1"]
+top_radius = 0.25
+bottom_radius = 0.25
+height = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xkl7m"]
 albedo_color = Color(1, 0.435294, 0, 1)
 
 [sub_resource type="PrismMesh" id="PrismMesh_leosj"]
 material = SubResource("StandardMaterial3D_xkl7m")
-size = Vector3(0.5, 0.5, 0.5)
+size = Vector3(0.25, 0.25, 0.25)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_nf3xh"]
+height = 1.0
+radius = 0.25
 
-[node name="Jogador" type="CharacterBody3D" node_paths=PackedStringArray("MeshAxis")]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_8dhmc"]
+height = 1.0
+radius = 0.3
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_8vcfs"]
+viewport_path = NodePath("SubViewport")
+
+[node name="Jogador" type="CharacterBody3D" node_paths=PackedStringArray("OutroHit", "area", "barraVida", "MeshAxis", "BulletTimer", "BulletSpawn") groups=["JogadorGrupo"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.26936, 0)
+collision_layer = 2
+collision_mask = 5
+axis_lock_angular_y = true
 script = ExtResource("1_v4dr1")
+OutroHit = NodePath("Area3D/OutroHit")
+area = NodePath("Area3D")
+barraVida = NodePath("CanvasLayer/ProgressBar")
+danoTiro = 12
+raycastMask = 1
 MeshAxis = NodePath("MeshAxis")
+BulletTimer = NodePath("BulletTimer")
+BulletSpawn = NodePath("MeshAxis/Nariz/BulletSpawnPos")
+BulletScene = ExtResource("2_gju43")
 
 [node name="MeshAxis" type="Node3D" parent="."]
 
@@ -25,9 +50,52 @@ mesh = SubResource("CylinderMesh_o6hk1")
 skeleton = NodePath("../..")
 
 [node name="Nariz" type="MeshInstance3D" parent="MeshAxis"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.733407, -0.635767)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.349702, -0.271759)
 mesh = SubResource("PrismMesh_leosj")
 skeleton = NodePath("../..")
 
+[node name="BulletSpawnPos" type="Marker3D" parent="MeshAxis/Nariz"]
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CylinderShape3D_nf3xh")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-3.21423e-08, 0.991817, -0.12767, 2.96236e-08, 0.12767, 0.991817, 1, 2.80972e-08, -3.34848e-08, -1.25822, 13.7905, 0)
+fov = 47.1392
+
+[node name="BulletTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("CylinderShape3D_8dhmc")
+
+[node name="OutroHit" type="Timer" parent="Area3D"]
+wait_time = 1.5
+one_shot = true
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.969532, 0)
+billboard = 1
+texture = SubResource("ViewportTexture_8vcfs")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ProgressBar" parent="CanvasLayer" instance=ExtResource("3_ydxm1")]
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 260.0
+offset_bottom = 27.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="timeout" from="Area3D/OutroHit" to="." method="_on_outro_hit_timeout"]
