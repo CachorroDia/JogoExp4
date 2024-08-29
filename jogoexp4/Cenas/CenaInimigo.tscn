@@ -21,6 +21,8 @@ viewport_path = NodePath("SubViewport")
 [node name="Inimigo" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0982, 0)
 script = ExtResource("1_nck2a")
+speed = 2
+vidaMax = 100.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_kkcun")
@@ -28,22 +30,16 @@ shape = SubResource("CapsuleShape3D_kkcun")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_jgjhs")
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-avoidance_enabled = true
-
 [node name="AreaDano" type="Area3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AreaDano"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.014632, 0)
 shape = SubResource("CylinderShape3D_stuuo")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-0.988816, 0, -0.149139, -0.066093, 0.89644, 0.438209, 0.133694, 0.443165, -0.886415, 0, 2.33141, -3.56407)
-
 [node name="BarraVida" parent="." instance=ExtResource("2_xpo56")]
 texture = SubResource("ViewportTexture_nwcmg")
 script = ExtResource("3_nmbrp")
 
-[connection signal="navigation_finished" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_navigation_finished"]
-[connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
 [connection signal="sem_hp_restando" from="BarraVida" to="." method="_on_barra_vida_sem_hp_restando"]

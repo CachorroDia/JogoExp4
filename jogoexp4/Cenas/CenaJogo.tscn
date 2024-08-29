@@ -1,8 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://dgnksq3geesu7"]
+[gd_scene load_steps=9 format=3 uid="uid://dgnksq3geesu7"]
 
-[ext_resource type="PackedScene" uid="uid://dpt8jfy1rtxqi" path="res://Cenas/Plataforma.tscn" id="1_f21dp"]
+[ext_resource type="Script" path="res://Scripts/Script Inimigo/SpawnInimigos.gd" id="1_l50q7"]
 [ext_resource type="PackedScene" uid="uid://b1but5qx4fi7e" path="res://Cenas/CenaJogador.tscn" id="2_4tjro"]
-[ext_resource type="PackedScene" uid="uid://c65eombfmi27n" path="res://Cenas/CenaInimigo.tscn" id="3_okuym"]
+[ext_resource type="PackedScene" uid="uid://dguuy8jckvtb7" path="res://Cenas/NavigationLevel.tscn" id="4_5ju4h"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8qmxl"]
 
@@ -13,37 +13,24 @@ sky_material = SubResource("ProceduralSkyMaterial_8qmxl")
 background_mode = 2
 sky = SubResource("Sky_iqrnt")
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_jc6w5"]
-vertices = PackedVector3Array(15.5, 0.59656, -1, 15.75, 0.59656, 0, 24.5, 0.59656, 0, 24.5, 0.59656, -24.5, -24.5, 0.59656, 0, -15.5, 0.59656, 0, -15.25, 0.59656, -1, -24.5, 0.59656, -24.5, 15.25, 0.59656, 1.25, 24.5, 0.59656, 24.5, -15.25, 0.59656, 1.25, -24.5, 0.59656, 24.5)
-polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(2, 0, 3), PackedInt32Array(5, 4, 6), PackedInt32Array(6, 4, 7), PackedInt32Array(0, 6, 3), PackedInt32Array(3, 6, 7), PackedInt32Array(1, 2, 8), PackedInt32Array(8, 2, 9), PackedInt32Array(5, 10, 4), PackedInt32Array(4, 10, 11), PackedInt32Array(8, 9, 10), PackedInt32Array(10, 9, 11)]
-
 [sub_resource type="SphereMesh" id="SphereMesh_up2aa"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ian1n"]
 
-[node name="Node 3D" type="Node3D"]
+[node name="Jogo" type="Node3D"]
+script = ExtResource("1_l50q7")
 
 [node name="Ambientação" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_srbbc")
 
 [node name="Jogador" parent="." instance=ExtResource("2_4tjro")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.55093, 1, 22.1294)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.44907, 1, 12.1294)
 
 [node name="LuzGlobal" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0.642788, -0.766044, 0, 0.766044, 0.642788, 1, 2.80972e-08, -3.34849e-08, -6.44142, 5.14318, -0.11909)
 shadow_enabled = true
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_jc6w5")
-
-[node name="Plataforma" parent="NavigationRegion3D" instance=ExtResource("1_f21dp")]
-
-[node name="Inimigo" parent="." instance=ExtResource("3_okuym")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.104527, 1.0499, -23.6024)
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-0.998128, -0.0140998, -0.0595159, -0.0478938, 0.785384, 0.617153, 0.0380411, 0.618848, -0.784589, 0.0564971, 11.1479, -27.4526)
-fov = 78.602
+[node name="NavigationRegion3D" parent="." instance=ExtResource("4_5ju4h")]
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.90237, -21.6949)
@@ -59,3 +46,8 @@ mesh = SubResource("SphereMesh_up2aa")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("SphereShape3D_ian1n")
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

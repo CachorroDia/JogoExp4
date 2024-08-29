@@ -32,5 +32,5 @@ skeleton = NodePath("../..")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CylinderShape3D_nf3xh")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.930251, 0.366923, 0, -0.366923, 0.930251, 0, 2.0176, 3.55646)
+[node name="CameraJogador" type="Camera3D" parent="."]
+transform = Transform3D(1, -1.01888e-08, -5.69396e-09, 1.15674e-08, 0.799989, 0.600015, -1.55832e-09, -0.600015, 0.799989, 0.242188, 2.11284, 2.30142)
