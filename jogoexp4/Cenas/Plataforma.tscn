@@ -1,17 +1,16 @@
 [gd_scene load_steps=3 format=3 uid="uid://dpt8jfy1rtxqi"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_50c3q"]
-size = Vector3(50, 0.2, 50)
+[sub_resource type="BoxShape3D" id="BoxShape3D_wd161"]
+size = Vector3(10, 0.2, 10)
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_kssrb"]
-points = PackedVector3Array(25.3919, 0.296748, 25.3919, -25.3919, -0.496748, -25.3919, -25.3919, 0.296748, -25.3919, 25.3919, -0.496748, -25.3919, -25.3919, -0.496748, 25.3919, -25.3919, 0.296748, 25.3919, 25.3919, 0.296748, -25.3919, 25.3919, -0.496748, 25.3919)
+[sub_resource type="BoxMesh" id="BoxMesh_50c3q"]
+size = Vector3(10, 0.2, 10)
 
 [node name="StaticBody3D" type="StaticBody3D"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.8374)
-mesh = SubResource("BoxMesh_50c3q")
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.8374)
-shape = SubResource("ConvexPolygonShape3D_kssrb")
+shape = SubResource("BoxShape3D_wd161")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_50c3q")
