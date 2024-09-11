@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d1bdi8vwmmjdu"]
+[gd_scene load_steps=10 format=3 uid="uid://bsmpjv4tcfim4"]
 
 [ext_resource type="Script" path="res://Scripts/Inimigo/inimigo_script.gd" id="1_g44xy"]
 [ext_resource type="PackedScene" uid="uid://dwem01y40spx6" path="res://Cenas/VidaJogadorCena.tscn" id="2_lxw0x"]
@@ -23,19 +23,22 @@ size = Vector3(0.5, 0.5, 0.5)
 [sub_resource type="ViewportTexture" id="ViewportTexture_k1cnx"]
 viewport_path = NodePath("SubViewport")
 
-[node name="Inimigo" type="CharacterBody3D" node_paths=PackedStringArray("area", "barraVida", "timer")]
+[node name="Inimigo" type="CharacterBody3D" node_paths=PackedStringArray("imunidade", "barraVida", "timer") groups=["Inimigo"]]
 collision_layer = 4
-collision_mask = 10
+collision_mask = 14
 script = ExtResource("1_g44xy")
+imunidade = NodePath("Imunidade")
 vidaMax = 20.0
-area = NodePath("Area3D")
 barraVida = NodePath("SubViewport/ProgressBar")
 timer = NodePath("Timer")
+danoInimigo = 10.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01619, 0)
 shape = SubResource("CapsuleShape3D_a38y7")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01619, 0)
 mesh = SubResource("CapsuleMesh_2s0db")
 
 [node name="bico" type="MeshInstance3D" parent="MeshInstance3D"]
@@ -43,6 +46,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.610541, -0.602534)
 mesh = SubResource("PrismMesh_uyl06")
 
 [node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01619, 0)
 collision_layer = 4
 collision_mask = 10
 
@@ -55,7 +59,7 @@ transparent_bg = true
 [node name="ProgressBar" parent="SubViewport" instance=ExtResource("2_lxw0x")]
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36741, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3836, 0)
 billboard = 1
 texture = SubResource("ViewportTexture_k1cnx")
 
@@ -65,5 +69,10 @@ debug_enabled = true
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.5
 
+[node name="Imunidade" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
 [connection signal="area_entered" from="Area3D" to="." method="_on_area_3d_area_entered"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="Imunidade" to="." method="_on_imunidade_timeout"]

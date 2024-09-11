@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b1but5qx4fi7e"]
+[gd_scene load_steps=14 format=3 uid="uid://b1but5qx4fi7e"]
 
 [ext_resource type="Script" path="res://Scripts/Script Jogador/ScriptJogador-Movimento.gd" id="1_v4dr1"]
 [ext_resource type="PackedScene" uid="uid://bhj04ajpawc4v" path="res://Cenas/Balas/BalaPadrao.tscn" id="2_gju43"]
@@ -27,8 +27,33 @@ radius = 0.3
 [sub_resource type="ViewportTexture" id="ViewportTexture_8vcfs"]
 viewport_path = NodePath("SubViewport")
 
+[sub_resource type="Gradient" id="Gradient_gm2o8"]
+interpolation_mode = 1
+colors = PackedColorArray(0, 1, 0.180392, 1, 0, 1, 0.180392, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_cn63s"]
+gradient = SubResource("Gradient_gm2o8")
+width = 214
+height = 169
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+metadata/_snap_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_y3ds0"]
+interpolation_mode = 1
+colors = PackedColorArray(1, 0, 0, 1, 1, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bbjfb"]
+gradient = SubResource("Gradient_y3ds0")
+width = 214
+height = 169
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+metadata/_snap_enabled = true
+
 [node name="Jogador" type="CharacterBody3D" node_paths=PackedStringArray("OutroHit", "area", "barraVida", "MeshAxis", "BulletTimer", "BulletSpawn") groups=["JogadorGrupo"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.26936, 0)
 collision_layer = 2
 collision_mask = 5
 axis_lock_angular_y = true
@@ -36,7 +61,7 @@ script = ExtResource("1_v4dr1")
 OutroHit = NodePath("Area3D/OutroHit")
 area = NodePath("Area3D")
 barraVida = NodePath("CanvasLayer/ProgressBar")
-danoTiro = 12
+nTiro = 1
 raycastMask = 1
 MeshAxis = NodePath("MeshAxis")
 BulletTimer = NodePath("BulletTimer")
@@ -44,6 +69,7 @@ BulletSpawn = NodePath("MeshAxis/Nariz/BulletSpawnPos")
 BulletScene = ExtResource("2_gju43")
 
 [node name="MeshAxis" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MeshAxis"]
 mesh = SubResource("CylinderMesh_o6hk1")
@@ -57,6 +83,7 @@ skeleton = NodePath("../..")
 [node name="BulletSpawnPos" type="Marker3D" parent="MeshAxis/Nariz"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 shape = SubResource("CylinderShape3D_nf3xh")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -67,6 +94,7 @@ fov = 47.1392
 one_shot = true
 
 [node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 collision_layer = 2
 collision_mask = 4
 
@@ -97,5 +125,51 @@ offset_bottom = 27.0
 grow_horizontal = 1
 grow_vertical = 1
 
+[node name="ContagemInimigo" type="TextureProgressBar" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -111.0
+offset_right = 111.0
+offset_bottom = 179.0
+grow_horizontal = 2
+max_value = 2.0
+step = 0.01
+fill_mode = 4
+texture_under = SubResource("GradientTexture2D_cn63s")
+texture_progress = SubResource("GradientTexture2D_bbjfb")
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -75.0
+offset_right = 50.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 45
+
+[node name="Respawn" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Cura" type="Timer" parent="."]
+autostart = true
+
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="timeout" from="Area3D/OutroHit" to="." method="_on_outro_hit_timeout"]
+[connection signal="timeout" from="Respawn" to="." method="_on_respawn_timeout"]
+[connection signal="timeout" from="Cura" to="." method="_on_cura_timeout"]

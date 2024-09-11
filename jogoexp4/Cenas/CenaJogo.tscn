@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://dgnksq3geesu7"]
 
 [ext_resource type="PackedScene" uid="uid://dpt8jfy1rtxqi" path="res://Cenas/Plataforma.tscn" id="1_f21dp"]
+[ext_resource type="Script" path="res://Scripts/CenaJogo/cena_jogo.gd" id="1_ksmg8"]
 [ext_resource type="PackedScene" uid="uid://b1but5qx4fi7e" path="res://Cenas/CenaJogador.tscn" id="2_4tjro"]
-[ext_resource type="PackedScene" uid="uid://d1bdi8vwmmjdu" path="res://Cenas/InimigoCena.tscn" id="3_os8as"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8qmxl"]
 
@@ -13,18 +13,20 @@ sky_material = SubResource("ProceduralSkyMaterial_8qmxl")
 background_mode = 2
 sky = SubResource("Sky_iqrnt")
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_8252f"]
-vertices = PackedVector3Array(-4.5, 0.4, -4.5, -4.5, 0.4, 4.5, 4.5, 0.4, 4.5, 4.5, 0.4, -4.5)
+[sub_resource type="NavigationMesh" id="NavigationMesh_5nbmp"]
+vertices = PackedVector3Array(-24.5, 0.4, -24.5, -24.5, 0.4, 24.5, 24.5, 0.4, 24.5, 24.5, 0.4, -24.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
-agent_height = 2.0
 
-[node name="Node3D" type="Node3D"]
+[node name="Node3D" type="Node3D" node_paths=PackedStringArray("jogador") groups=["GrupoControlador"]]
+script = ExtResource("1_ksmg8")
+jogador = NodePath("Jogador")
+randomXMin = -25
+randomXMax = 25
+randomZMin = -25
+randomZMax = 25
 
 [node name="Jogador" parent="." instance=ExtResource("2_4tjro")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0107269, 0.596387, 0.0527225)
-
-[node name="Inimigo" parent="." instance=ExtResource("3_os8as")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2401, 1.10113, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.84184, 0, 0)
 
 [node name="Ambientação" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_srbbc")
@@ -34,6 +36,6 @@ transform = Transform3D(-4.37114e-08, 0.642788, -0.766044, 0, 0.766044, 0.642788
 shadow_enabled = true
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_8252f")
+navigation_mesh = SubResource("NavigationMesh_5nbmp")
 
 [node name="StaticBody3D" parent="NavigationRegion3D" instance=ExtResource("1_f21dp")]
