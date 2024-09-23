@@ -56,6 +56,27 @@ func gerar_inimigos() -> void:
 		instanciaInimigo.global_position = Vector3( randi_range(randomXMin, randomXMax), 0, randi_range(randomZMin, randomZMax))
 		instanciaInimigo.inimigoMorreu.connect( atualizarContagem )
 	pass
+	
+var nova_torreta_aux : TorretaClass
+func posicionar_turret():
+	var TorretaScene = preload("res://Cenas/Torreta.tscn")
+	var nova_torreta = TorretaScene.instantiate() as TorretaClass	
+	add_child(nova_torreta)
+	nova_torreta_aux = nova_torreta
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("mouse") and nova_torreta_aux != null:
+		print("click")
+		nova_torreta_aux.torreta_posicionado = true
+		nova_torreta_aux.combateTurret()
+		nova_torreta_aux.animation.play("gerar_torreta")
+		nova_torreta_aux = null
+	pass
+
+func _process(delta: float) -> void:
+	if nova_torreta_aux != null:
+		nova_torreta_aux.position = jogador.exportarRayCast
+	pass
 
 func comecar_wave() -> void:
 	nInimigosMortos = 0
@@ -97,6 +118,9 @@ func upgrade() -> void:
 		print("número tiro")
 	elif(upgradeEscolhido == 6):
 		jogador.fatorCura += 1
+	elif(upgradeEscolhido == 7):
+		posicionar_turret()
+		print("Torreta")
 	for i in range( len(listaUpgrades) ):
 		listaUpgrades[i].queue_free()
 	listaUpgrades.clear()
@@ -107,9 +131,9 @@ func gerar_upgrades() -> void:
 	var repetiu = []
 	var descricoes = ["Aumenta a velocidade de ataque em 10%", "Aumenta o dano em 5%",
 	"Aumenta a velocidade de movimento em 15%", "Aumenta a vida máxima em 10%", "Reduz o tempo de respawn em 10%",
-	"Incrementa o número de balas por tiro", "Recebe +1 de cura por segundo"]
+	"Incrementa o número de balas por tiro", "Recebe +1 de cura por segundo", "Receba +1 Torreta"]
 	for i in range(3):
-		sorteio = randi_range(0, 6)
+		sorteio = randi_range(7, 7)
 		while (sorteio in repetiu or (sorteio == 0 and jogador.TiroIntervalo < 0.3) or (sorteio == 4 and jogador.tempoRespawn.wait_time < 0.3) ) : sorteio = randi_range(0, 5)
 		repetiu.append(sorteio)
 
@@ -117,7 +141,7 @@ func gerar_upgrades() -> void:
 		jogador.tabulacaoUpgrade.add_child(Upgrade)
 		Upgrade.descricao.text = descricoes[sorteio]
 		Upgrade.valor = sorteio
-		Upgrade.controle = get_tree().get_first_node_in_group(&"GrupoControlador")
+		Upgrade.controle = get_tree().get_first_node_in_group("GrupoControlador")
 		Upgrade.texture.texture = icon
 		listaUpgrades.append(Upgrade)
 		Upgrade.escolheu.connect(upgrade)

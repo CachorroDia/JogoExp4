@@ -1,0 +1,143 @@
+[gd_scene load_steps=13 format=3 uid="uid://b1i256mtc1kb5"]
+
+[ext_resource type="Script" path="res://Scripts/torreta.gd" id="1_1xeu4"]
+[ext_resource type="PackedScene" uid="uid://dasrxby6v7fm8" path="res://Cenas/vidaTurrent.tscn" id="2_y21tg"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mjkam"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m1rnf"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.54902)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f7r55"]
+material = SubResource("StandardMaterial3D_m1rnf")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_13kdm"]
+transparency = 1
+albedo_color = Color(1, 0, 0, 0.54902)
+
+[sub_resource type="BoxMesh" id="BoxMesh_j0iar"]
+material = SubResource("StandardMaterial3D_13kdm")
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_u7sv1"]
+radius = 5.0
+
+[sub_resource type="Animation" id="Animation_qdsk3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:mesh:material:albedo_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.54902)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:mesh:material:transparency")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_d088j"]
+resource_name = "gerar_torreta"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:mesh:material:albedo_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0001, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.54902), Color(1, 1, 1, 0.54902), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:mesh:material:transparency")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_akom2"]
+_data = {
+"RESET": SubResource("Animation_qdsk3"),
+"gerar_torreta": SubResource("Animation_d088j")
+}
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_0qmux"]
+viewport_path = NodePath("SubViewport")
+
+[node name="Torreta" type="CharacterBody3D" node_paths=PackedStringArray("timerTiro")]
+collision_layer = 16
+collision_mask = 4
+script = ExtResource("1_1xeu4")
+timerTiro = NodePath("TimerTiro")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_mjkam")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_f7r55")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.999973, 0.00734773, 0, -0.00734773, 0.999973, 0, 0, 0, 1, 0.028365, 0.330676, -0.391121)
+mesh = SubResource("BoxMesh_j0iar")
+
+[node name="AreaTiro" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaTiro"]
+shape = SubResource("CylinderShape3D_u7sv1")
+
+[node name="AreaDano" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaDano"]
+shape = SubResource("CapsuleShape3D_mjkam")
+
+[node name="TimerTiro" type="Timer" parent="."]
+
+[node name="TimerDano" type="Timer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_akom2")
+}
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.994312, 0, 0.106507, 0, 1, 0, -0.106507, 0, 0.994312, 0, 1.94692, 0)
+billboard = 1
+texture_filter = 1
+texture = SubResource("ViewportTexture_0qmux")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+transparent_bg = true
+size = Vector2i(320, 48)
+
+[node name="VidaTorreta" parent="SubViewport" instance=ExtResource("2_y21tg")]
+
+[connection signal="body_entered" from="AreaTiro" to="." method="_on_area_tiro_body_entered"]
+[connection signal="body_exited" from="AreaTiro" to="." method="_on_area_tiro_body_exited"]
+[connection signal="body_entered" from="AreaDano" to="." method="_on_area_dano_body_entered"]

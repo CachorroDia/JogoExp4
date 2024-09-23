@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://b1but5qx4fi7e"]
+[gd_scene load_steps=13 format=3 uid="uid://b1but5qx4fi7e"]
 
 [ext_resource type="Script" path="res://Scripts/Script Jogador/ScriptJogador-Movimento.gd" id="1_v4dr1"]
 [ext_resource type="PackedScene" uid="uid://bhj04ajpawc4v" path="res://Cenas/Balas/BalaPadrao.tscn" id="2_gju43"]
 [ext_resource type="PackedScene" uid="uid://dwem01y40spx6" path="res://Cenas/VidaJogadorCena.tscn" id="3_ydxm1"]
+[ext_resource type="Script" path="res://Scripts/gui.gd" id="4_esyds"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_o6hk1"]
 top_radius = 0.25
@@ -27,41 +28,32 @@ radius = 0.3
 [sub_resource type="ViewportTexture" id="ViewportTexture_8vcfs"]
 viewport_path = NodePath("SubViewport")
 
-[sub_resource type="Gradient" id="Gradient_gm2o8"]
-interpolation_mode = 1
-colors = PackedColorArray(0, 1, 0.180392, 1, 0, 1, 0.180392, 0)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u0h8f"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.895073, 0.355171, 0.890033, 1)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_size = 2
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_cn63s"]
-gradient = SubResource("Gradient_gm2o8")
-width = 214
-height = 169
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-metadata/_snap_enabled = true
-
-[sub_resource type="Gradient" id="Gradient_y3ds0"]
-interpolation_mode = 1
-colors = PackedColorArray(1, 0, 0, 1, 1, 0, 0, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_bbjfb"]
-gradient = SubResource("Gradient_y3ds0")
-width = 214
-height = 169
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-metadata/_snap_enabled = true
+[sub_resource type="LabelSettings" id="LabelSettings_0xldi"]
 
 [node name="Jogador" type="CharacterBody3D" node_paths=PackedStringArray("OutroHit", "area", "barraVida", "MeshAxis", "BulletTimer", "BulletSpawn") groups=["JogadorGrupo"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.26936, 0)
 collision_layer = 2
 collision_mask = 5
 axis_lock_angular_y = true
 script = ExtResource("1_v4dr1")
 OutroHit = NodePath("Area3D/OutroHit")
 area = NodePath("Area3D")
-barraVida = NodePath("CanvasLayer/ProgressBar")
-nTiro = 1
+barraVida = NodePath("GUI/Barra_Vida")
+danoTiro = 12.0
 raycastMask = 1
 MeshAxis = NodePath("MeshAxis")
 BulletTimer = NodePath("BulletTimer")
@@ -69,7 +61,6 @@ BulletSpawn = NodePath("MeshAxis/Nariz/BulletSpawnPos")
 BulletScene = ExtResource("2_gju43")
 
 [node name="MeshAxis" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MeshAxis"]
 mesh = SubResource("CylinderMesh_o6hk1")
@@ -83,7 +74,6 @@ skeleton = NodePath("../..")
 [node name="BulletSpawnPos" type="Marker3D" parent="MeshAxis/Nariz"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 shape = SubResource("CylinderShape3D_nf3xh")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -94,7 +84,6 @@ fov = 47.1392
 one_shot = true
 
 [node name="Area3D" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.509118, 0)
 collision_layer = 2
 collision_mask = 4
 
@@ -110,9 +99,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.969532, 0)
 billboard = 1
 texture = SubResource("ViewportTexture_8vcfs")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="GUI" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource("4_esyds")
 
-[node name="ProgressBar" parent="CanvasLayer" instance=ExtResource("3_ydxm1")]
+[node name="Barra_Vida" parent="GUI" instance=ExtResource("3_ydxm1")]
 anchors_preset = 0
 anchor_left = 0.0
 anchor_top = 0.0
@@ -125,51 +116,117 @@ offset_bottom = 27.0
 grow_horizontal = 1
 grow_vertical = 1
 
-[node name="ContagemInimigo" type="TextureProgressBar" parent="CanvasLayer"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -111.0
-offset_right = 111.0
-offset_bottom = 179.0
-grow_horizontal = 2
-max_value = 2.0
-step = 0.01
-fill_mode = 4
-texture_under = SubResource("GradientTexture2D_cn63s")
-texture_progress = SubResource("GradientTexture2D_bbjfb")
-
-[node name="Control" type="Control" parent="CanvasLayer"]
+[node name="Player_GUI" type="Control" parent="GUI"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 640.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -75.0
-offset_right = 50.0
-offset_bottom = 75.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 45
+[node name="Panel" type="Panel" parent="GUI/Player_GUI"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 1088.0
+offset_bottom = 576.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_u0h8f")
+
+[node name="BT_Upgrade1" type="Button" parent="GUI/Player_GUI/Panel"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 320.0
+offset_bottom = 448.0
+
+[node name="Titulo_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade1"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 200.0
+offset_right = 192.0
+offset_bottom = 249.0
+text = "Titulo do upgrade"
+label_settings = SubResource("LabelSettings_0xldi")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Descrição_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade1"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 248.0
+offset_right = 240.0
+offset_bottom = 384.0
+text = "[Aqui fica a descrição do que o upgrade faz]"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="BT_Upgrade2" type="Button" parent="GUI/Player_GUI/Panel"]
+layout_mode = 0
+offset_left = 384.0
+offset_top = 64.0
+offset_right = 640.0
+offset_bottom = 448.0
+
+[node name="Titulo_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade2"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 200.0
+offset_right = 192.0
+offset_bottom = 249.0
+text = "Titulo do upgrade"
+label_settings = SubResource("LabelSettings_0xldi")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Descrição_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade2"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 248.0
+offset_right = 240.0
+offset_bottom = 384.0
+text = "[Aqui fica a descrição do que o upgrade faz]"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="BT_Upgrade3" type="Button" parent="GUI/Player_GUI/Panel"]
+layout_mode = 0
+offset_left = 704.0
+offset_top = 64.0
+offset_right = 960.0
+offset_bottom = 448.0
+
+[node name="Titulo_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade3"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 200.0
+offset_right = 192.0
+offset_bottom = 249.0
+text = "Titulo do upgrade"
+label_settings = SubResource("LabelSettings_0xldi")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Descrição_Upgrade" type="Label" parent="GUI/Player_GUI/Panel/BT_Upgrade3"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 248.0
+offset_right = 240.0
+offset_bottom = 384.0
+text = "[Aqui fica a descrição do que o upgrade faz]"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="Respawn" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 2.0
 one_shot = true
-
-[node name="Cura" type="Timer" parent="."]
-autostart = true
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="timeout" from="Area3D/OutroHit" to="." method="_on_outro_hit_timeout"]
+[connection signal="pressed" from="GUI/Player_GUI/Panel/BT_Upgrade1" to="GUI/Player_GUI" method="_on_bt_upgrade_1_pressed"]
+[connection signal="pressed" from="GUI/Player_GUI/Panel/BT_Upgrade2" to="GUI/Player_GUI" method="_on_bt_upgrade_2_pressed"]
+[connection signal="pressed" from="GUI/Player_GUI/Panel/BT_Upgrade3" to="GUI/Player_GUI" method="_on_bt_upgrade_3_pressed"]
 [connection signal="timeout" from="Respawn" to="." method="_on_respawn_timeout"]
-[connection signal="timeout" from="Cura" to="." method="_on_cura_timeout"]

@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3 uid="uid://dpt8jfy1rtxqi"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wd161"]
-size = Vector3(50, 0.2, 50)
+size = Vector3(10, 0.2, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_50c3q"]
-size = Vector3(50, 0.2, 50)
+size = Vector3(10, 0.2, 10)
 
 [node name="StaticBody3D" type="StaticBody3D"]
 collision_mask = 0

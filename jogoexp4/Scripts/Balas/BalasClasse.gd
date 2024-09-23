@@ -25,7 +25,7 @@ func deletar(): ##Função chamada para deletar a bala quando o timer é esgotad
 	queue_free()
 
 
-func _on_area_3d_area_entered(_area: Area3D) -> void:
+func _on_area_3d_area_entered(area: Area3D) -> void:
 	get_tree().create_timer(0.1).timeout
 	queue_free()
 	pass # Replace with function body.

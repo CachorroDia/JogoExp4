@@ -5,33 +5,18 @@ class_name Player
 var velMax = 280 ##Define o valor da velocidade máxima
 const acel = 25 ##Define a aceleração do corpo
 const friccao = 500 ##Define a fricção (Atrito) do corpo
-var vivo : bool = true
 
-#--------------- Variáveis para a UI dos upgrades -------------
-@onready var tabulacaoUpgrade : HBoxContainer = $CanvasLayer/Control/HBoxContainer
-
-#--------------------------------------------------------------
-var fatorCura : int
-#-------------------------------------------------------------
-
-@onready var contagem_inimigo : TextureProgressBar = $CanvasLayer/ContagemInimigo
-@onready var tempoRespawn : Timer = $Respawn
 #--------- variáveis para o jogador tomar/causar dano -----------#
-var vidaMax : float = 100 ##Vida máxima do jogador
+var vidaMax : int = 100 ##Vida máxima do jogador
 var vidaAtual : float = vidaMax ##A vida atual que o jogador tem
-
 @export var OutroHit : Timer ##Define o timer para quando o jogador tomará dano novamente
 @export var area : Area3D ##Define a área3d do jogador
-
 @export var barraVida : ProgressBar ##Define a barra de progresso que mostra o HP do jogador
-
-@export var inimigo : InimigoClass
-@export var danoTiro : float = 10 ##A quantidade de dano que o jogador causa em um tiro
-@export var nTiro : int
+@export var danoTiro : float ##A quantidade de dano que o jogador causa em um tiro
 
 #------ variáveis para o raycast -------#
 @onready var camera = $Camera3D ##Determina qual será o nó da câmera que fará o screen ray-cast
-@export_flags_3d_physics var raycastMask : int ##Define quais camadas o raycast irá analizar
+@export_flags_3d_physics var raycastMask : int ##Define quais camados o raycast irá analizar
 var raioOrigem = Vector3() ##Define a origem de onde o raio irá ser gerado, de modo a apontar onde o mouse estará
 var raioFim = Vector3() ##Define onde o raio termina, gerando assim o vetor
 
@@ -42,16 +27,17 @@ var raioFim = Vector3() ##Define onde o raio termina, gerando assim o vetor
 @export_group("Combat Nodes") ## Grupo de variáveis que irão controlar o "spawn" de tiros
 @export var BulletTimer : Timer ## Define o nó Timer, que irá determinar quando gerar balas
 @export var BulletSpawn : Marker3D ## Instancia o marcador de posição que irá gerar as balas
-@export var BulletScene : PackedScene ## Instancia a cena da bala, usada para criar com o instantiete
+@export var BulletScene : PackedScene ## Instancia a cena da bala, usada para criar com o instantiate
 @export_subgroup("Parâmetros de combate") ##Sub parâmetros que irão controlar a bala
 @export_range(0.02, 3.0, 0.02) var TiroIntervalo : float = 3 ## Tempo para gerar uma nova bala
 var direcaoBala : Vector3 ## Vetor que irá definir qual será a trajetória da bala, será multiplicado com velocidade e delta
-# -------------------------#
+# -------------------------
 
 #------------ Função para causar dano no jogador ------------- #
 func _on_area_3d_body_entered(body: Node3D) -> void: ##Verifica se o inimigo entrou na área de tomar dano do jogador
 	if body is InimigoClass and OutroHit.is_stopped():
-		causar_dano(body.danoInimigo)
+		print("Tocou")
+		causar_dano(10)
 		OutroHit.start()
 	pass # Replace with function body.
 	
@@ -59,28 +45,20 @@ func _on_outro_hit_timeout() -> void: ##Usada para verificar se o inimigo contin
 	for body in area.get_overlapping_bodies():
 		if body is InimigoClass:
 			OutroHit.start()
-			causar_dano(body.danoInimigo)
+			causar_dano(10)
+			print("OutroDano")
 	pass # Replace with function body.
 	
-func causar_dano(dano : float ) -> void: ##Subtrai a vida do jogador e atualiza a barra de progresso
+func causar_dano(dano) -> void: ##Subtrai a vida do jogador e atualiza a barra de progresso
 	vidaAtual -= dano
 	var tween = get_tree().create_tween().set_parallel()
 	tween.tween_property(barraVida, "value", vidaAtual, 1)
-	if(vidaAtual <= 0):
-		vivo = false
+	if vidaAtual < 0:
 		visible = false
-		$Area3D.set_collision_mask_value(3, vivo)
+		esta_vivo = false
+		$Area3D.set_collision_mask_value(3, false)
 		$Respawn.start()
 	pass
-
-func _on_respawn_timeout() -> void:
-	vidaAtual = vidaMax
-	barraVida.value = vidaAtual
-	global_position = Vector3.ZERO
-	visible = true
-	vivo = true
-	$Area3D.set_collision_mask_value(3, vivo)
-	pass # Replace with function body.
 # -------------------------------------------------------------- #
 
 #Essa função faz o modelo apontar para o movimento e não para o mouse, por isso foi descontinuado
@@ -96,6 +74,7 @@ var versor = Vector3.ZERO ##Cria um vetor x,y,z. ZERO faz tudo começar com valo
 func _ready() -> void: ## Atualmente usado para começar um loop com a função combate(), nela será feito a criação das balas. Também defini umas propriedades iniciais
 	barraVida.max_value = vidaMax
 	barraVida.value = vidaAtual
+	regen()
 	combate()
 
 func _physics_process(delta: float) -> void: ##Chamado da física da Godot, ela quem chama a função movimento_jogador
@@ -113,7 +92,7 @@ func _physics_process(delta: float) -> void: ##Chamado da física da Godot, ela 
 	
 	if not interseccao.is_empty() : #Testa se um raio conseguiu interagir e rotaciona o player
 		var pos : Vector3 = interseccao.position
-		MeshAxis.look_at(Vector3(pos.x, MeshAxis.global_position.y, pos.z), Vector3(0,MeshAxis.global_position.y,0))
+		MeshAxis.look_at(Vector3(pos.x, global_position.y, pos.z), Vector3(0,1,0))
 		direcaoBala = (global_position * Vector3(1,0,1) ).direction_to(pos * Vector3(1,0,1) )
 # --------------------------- #
 #------- Função para atirar ------- #
@@ -125,16 +104,44 @@ func combate() -> void: ##Função responsável em gerar as balas
 	combate()
 	pass
 	
+var numero_tiros = 2
 func disparar() -> void: ##Gera a bala em questão
-	if(vivo == true):
-		for i in range(nTiro):
+	if esta_vivo == true:
+		for i in range (numero_tiros):
 			var balaInstancia : BalaEntity = BulletScene.instantiate() as BalaEntity #Instancia a bala
 			add_sibling(balaInstancia) #Adiciona como irmã (para ser independente do jogador)
 			balaInstancia.global_position = BulletSpawn.global_position #Define a posição da bala inicial
 			balaInstancia.direcao = direcaoBala #Define a diração da velocidade da bala
-			await get_tree().create_timer(0.05).timeout
-
+			await get_tree().create_timer(0.1).timeout
+	
 	#---------------------------------#
+	
+#-------Variavel de controle do upgrade de regen-----------#
+var taxa_regen : float = 1.0 # HP por segundo
+
+func regen(): ## Regeneração de vida do player
+	# Definindo timer
+	var regen_timer = Timer.new()
+	add_child(regen_timer)
+	regen_timer.one_shot = false
+	regen_timer.autostart = true
+	regen_timer.wait_time = 1.0
+	regen_timer.timeout.connect(func():
+		
+		if vidaAtual < vidaMax:
+			vidaAtual += taxa_regen
+			print("Regenerando! [", vidaAtual, "]" )
+			barraVida.value = vidaAtual
+			if vidaAtual > vidaMax:
+				vidaAtual = vidaMax
+		)
+	regen_timer.start()
+	pass
+	
+#-----------Configuração de respawn-----------#
+var ponto_respawn = Vector3(0,1,0)
+var esta_vivo = true
+
 func verificar_norma(): ##Função que define para onde o versor vai apontar, retorna um vetor normalizado
 	versor.x = int(Input.is_action_pressed("AndarFrente")) - int(Input.is_action_pressed("AndarTras"))
 	#O Input retorna 1 ou 0 pois o resultado é booleano, então foi convertido para um inteiro, assim
@@ -169,14 +176,14 @@ func movimento_Jogador(delta): ##Função que realiza o movimento do jogador, ne
 		velocity = Vector3.ZERO
 	else:
 		velocity = (versor * velMax * delta)
-	if(vivo == true):
+	if esta_vivo == true: 
 		move_and_slide()
-
-
-func _on_cura_timeout() -> void:
-	if((vidaAtual + fatorCura) > vidaMax):
-		vidaAtual = vidaMax
-	else:
-		vidaAtual += fatorCura
-		barraVida.value = vidaAtual
-	pass # Replace with function body.
+		
+@onready var timer_respawn = $Respawn
+func _on_respawn_timeout() -> void:
+	visible = true
+	vidaAtual = vidaMax
+	esta_vivo = true
+	global_position = ponto_respawn
+	$Area3D.set_collision_mask_value(3, true)
+	pass

@@ -19,8 +19,6 @@ config/icon="res://icon.svg"
 
 bala=""
 JogadorGrupo=""
-GrupoControlador=""
-Inimigo=""
 
 [input]
 
