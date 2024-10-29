@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c0nlqdb2absnh"]
+
+[ext_resource type="Shader" uid="uid://by76gmaqbtirp" path="res://Shaders/NovoCirtcuito.tres" id="1_0mru5"]
+
+[resource]
+render_priority = 127
+shader = ExtResource("1_0mru5")
+shader_parameter/Velocidade = 0.3
+shader_parameter/Tamanho = 0.01
+shader_parameter/ColorParameter = Color(0.176496, 0.6423, 0, 1)
+shader_parameter/FloatParameter = 4.0
+shader_parameter/Vector2Parameter = Vector2(16.135, 16.435)

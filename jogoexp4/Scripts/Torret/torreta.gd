@@ -8,14 +8,31 @@ class_name  TorretaClass
 var torreta_posicionado : bool = false
 @onready var malha : MeshInstance3D = $MeshInstance3D
 @onready var animation : AnimationPlayer = $AnimationPlayer
+@onready var barraVida : ProgressBar = $SubViewport/VidaTorreta
+@onready var animacao : AnimationPlayer = $AnimationPlayer
+var vidaTurrent_max : float
+var vidaTurrent_atual : float
+@warning_ignore("unused_signal")
+signal posicionado
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("JogadorGrupo")
-	$SubViewport/VidaTorreta.max_value = vidaTurrent_max
-	combateTurret()
+	vidaTurrent_max = player.vidaMax
+	vidaTurrent_atual  = vidaTurrent_max
+	barraVida.max_value = vidaTurrent_max
+	barraVida.value = vidaTurrent_atual
+
+func _input(event: InputEvent) -> void:
+	if(event.is_action("Click") and !torreta_posicionado):
+		torreta_posicionado = true;
+		animacao.play("Colocar")
+		emit_signal("posicionado")
+		combateTurret()
 	
 func _process(_delta: float) -> void:
 	 # Aqui faz a torreta olhar pro inimigo que entrar na area 3d
+	if(!torreta_posicionado):
+		position = Vector3(player.rayCastExport.x, 0, player.rayCastExport.z)
 	if len(alvo) > 0:
 		look_at(Vector3(alvo[0].position.x, global_position.y, alvo[0].position.z))
 
@@ -45,24 +62,29 @@ func atirarTurret():
 func _on_area_tiro_body_entered(body: CharacterBody3D) -> void:
 	if body is InimigoClass:
 		alvo.append(body)
-		#print("A lista: ", len(alvo))
 
 func _on_area_tiro_body_exited(body: CharacterBody3D) -> void:
 	if body is InimigoClass:
 		alvo.pop_at(alvo.find(body,0))
-		#print("A lista: ", len(alvo))
 
 #----------- Vida Turrent -----------#
-var vidaTurrent_max : float = 30
-var vidaTurrent_atual : float = vidaTurrent_max
-
 func receberDano(dano: float):
+	var tween = get_tree().create_tween().set_parallel()
 	vidaTurrent_atual -= dano
-	print("HP: ", vidaTurrent_atual, "/", vidaTurrent_max)
+	tween.tween_property(barraVida, "value", vidaTurrent_atual, 0.5)
 	if vidaTurrent_atual <= 0:
 		queue_free()
 
 func _on_area_dano_body_entered(body: Node3D) -> void:
-	if body.is_in_group("Inimigo"):
+	if (body.is_in_group("Inimigo") and $TimerDano.is_stopped()):
 		receberDano(body.danoInimigo)
+		$TimerDano.start()
+	pass # Replace with function body.
+
+
+func _on_timer_dano_timeout() -> void:
+	for body in $AreaDano.get_overlapping_bodies():
+		if body is InimigoClass:
+			$TimerDano.start()
+			receberDano(body.danoInimigo)
 	pass # Replace with function body.

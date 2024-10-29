@@ -1,0 +1,15 @@
+[gd_resource type="Sky" load_steps=3 format=3 uid="uid://8jjkt5k2ghx8"]
+
+[ext_resource type="Shader" uid="uid://si0y0046sdu4" path="res://Shaders/Céu/ceuShader.tres" id="1_0njap"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_codno"]
+shader = ExtResource("1_0njap")
+shader_parameter/Horizonte = 0.0
+shader_parameter/Curvatura = 0.0
+shader_parameter/MapeamentoQuadrados2 = 12.24
+shader_parameter/Pulsacao = 0.0
+shader_parameter/VelocidadeTrocaNumeros = 2.075
+shader_parameter/Densiade_de_mudana = 18.22
+
+[resource]
+sky_material = SubResource("ShaderMaterial_codno")

@@ -1,0 +1,20 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://k0ykpfi7wq5n"]
+
+[ext_resource type="Shader" uid="uid://c5jeya33fprn7" path="res://Shaders/Circuito.tres" id="1_w2pvo"]
+[ext_resource type="Texture2D" uid="uid://cjmmwlphjlg2x" path="res://Shaders/Texturas/FundoShader.png" id="2_uvkc8"]
+[ext_resource type="Texture2D" uid="uid://cpjaog3y6p68n" path="res://Imagens/Textura_DD2.png" id="3_chxfh"]
+[ext_resource type="Texture2D" uid="uid://b0n7b7a2s280w" path="res://Imagens/NormalMapCircuito.png" id="4_yqayb"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_w2pvo")
+shader_parameter/VelocidadeEnergia = Vector2(0.58, 1)
+shader_parameter/DensidadeEnergia = 800
+shader_parameter/CoresVelocidade = 0.5
+shader_parameter/OffsetXY = Vector2(-0.235, 0.145)
+shader_parameter/EscalaXY = Vector2(2.105, 1.74)
+shader_parameter/NormalMapOffset = Vector2(-0.235, 0.145)
+shader_parameter/NormalMapEscale = Vector2(2.105, 1.74)
+shader_parameter/TexturaCircuito = ExtResource("3_chxfh")
+shader_parameter/FundoPadrao = ExtResource("2_uvkc8")
+shader_parameter/tex_frg_61 = ExtResource("4_yqayb")
